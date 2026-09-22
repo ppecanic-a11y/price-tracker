@@ -9,15 +9,9 @@ PRODUCTS = [
     {
         "id": "sony-a6400",
         "name": "Sony Alpha a6400 Body",
-        "url": "https://www.primjer-shop.hr/proizvod/sony-a6400",
+        "url": "https://www.aviteh.hr/sony-alpha-a6400-body.html",
         "fallback_selector": ".price-now, .regular-price",
-    },
-    {
-        "id": "jbl-tune-flex",
-        "name": "JBL Tune Flex 2",
-        "url": "https://www.primjer-shop.hr/proizvod/jbl-tune-flex",
-        "fallback_selector": "span.price",
-    },
+    }
 ]
 
 HEADERS = {
