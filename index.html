@@ -1,1 +1,60 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Praćenje Cijena</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-gray-100 font-sans min-h-screen p-6">
+  <div class="max-w-4xl mx-auto">
+    <header class="mb-8 border-b border-gray-800 pb-4 flex justify-between items-center">
+      <h1 class="text-2xl font-bold tracking-tight text-white">📉 Tracker Sniženja</h1>
+      <span id="last-update" class="text-xs text-gray-400"></span>
+    </header>
 
+    <div id="product-grid" class="grid gap-4 md:grid-cols-2"></div>
+  </div>
+
+  <script>
+    fetch('data.json')
+      .then(res => res.json())
+      .then(data => {
+        const grid = document.getElementById('product-grid');
+        let latestDate = '';
+
+        for (const [id, item] of Object.entries(data)) {
+          const discount = item.initial_price && item.current_price < item.initial_price
+            ? Math.round(((item.initial_price - item.current_price) / item.initial_price) * 100)
+            : 0;
+
+          if (item.history.length) {
+            latestDate = item.history[item.history.length - 1].date;
+          }
+
+          const card = document.createElement('div');
+          card.className = "bg-gray-800 border border-gray-700 rounded-xl p-5 flex flex-col justify-between";
+          card.innerHTML = `
+            <div>
+              <div class="flex justify-between items-start gap-2">
+                <h2 class="font-semibold text-lg text-white">${item.name}</h2>
+                ${discount > 0 ? `<span class="bg-emerald-500/20 text-emerald-400 text-xs px-2.5 py-1 rounded-full font-bold">-${discount}%</span>` : ''}
+              </div>
+              <div class="mt-4">
+                <div class="text-3xl font-extrabold text-white">${item.current_price ? item.current_price.toFixed(2) + ' €' : 'N/A'}</div>
+                <div class="text-xs text-gray-400 mt-1">Početna: ${item.initial_price ? item.initial_price.toFixed(2) + ' €' : '—'} | Najniža: ${item.lowest_price ? item.lowest_price.toFixed(2) + ' €' : '—'}</div>
+              </div>
+            </div>
+            <a href="${item.url}" target="_blank" class="mt-6 block text-center bg-gray-700 hover:bg-gray-600 text-sm font-medium py-2 rounded-lg transition">
+              Otvori webshop ↗
+            </a>
+          `;
+          grid.appendChild(card);
+        }
+        if (latestDate) {
+          document.getElementById('last-update').innerText = `Ažurirano: ${latestDate}`;
+        }
+      });
+  </script>
+</body>
+</html>
