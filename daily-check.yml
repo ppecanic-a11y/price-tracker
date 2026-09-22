@@ -1,1 +1,37 @@
+name: Dnevno azuriranje cijena
 
+on:
+  schedule:
+    - cron: '0 4 * * *' # 04:00 UTC (06:00 po lokalnom vremenu)
+  workflow_dispatch: # Omogucuje rucno pokretanje na gumb za test
+
+permissions:
+  contents: write
+
+jobs:
+  run-tracker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Preuzmi kod
+        uses: actions/checkout@v4
+
+      - name: Postavi Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Instaliraj pakete
+        run: |
+          pip install requests beautifulsoup4
+
+      - name: Pokreni skriptu
+        run: |
+          python tracker.py
+
+      - name: Spremi izmjene
+        run: |
+          git config --global user.name "GitHub Action Bot"
+          git config --global user.email "bot@github.com"
+          git add data.json
+          git commit -m "Auto-update cijena: $(date +'%Y-%m-%d')" || exit 0
+          git push
